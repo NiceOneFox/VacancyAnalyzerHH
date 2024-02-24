@@ -1,5 +1,6 @@
 ﻿using Flurl;
 using Flurl.Http;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using VacancyAnalyzerHH.Contracts.Interfaces;
 using VacancyAnalyzerHH.Core.Models;
@@ -14,10 +15,14 @@ public class HeadHunterClient : IHeadHunterClient
     private static readonly string baseUrl = "https://api.hh.ru";
 
     private readonly ILogger _logger;
+    private readonly IMemoryCache _memoryCache;
 
-    public HeadHunterClient(ILogger<HeadHunterClient> logger)
+    public HeadHunterClient(
+        ILogger<HeadHunterClient> logger,
+        IMemoryCache memoryCache)
     {
         _logger = logger;
+        _memoryCache = memoryCache;
     }
 
     /// <inheritdoc/>
@@ -25,6 +30,10 @@ public class HeadHunterClient : IHeadHunterClient
     {
         try
         {
+            _memoryCache.TryGetValue(authApplicationModel.Code, out string? cachedAuthToken);
+
+            if (!string.IsNullOrWhiteSpace(cachedAuthToken)) return cachedAuthToken;
+
             var tokenRequest = await baseUrl
                 .AppendPathSegment("token")
                 .PostUrlEncodedAsync(new
@@ -38,6 +47,8 @@ public class HeadHunterClient : IHeadHunterClient
                 cancellationToken: cancellationToken);
 
             var token = await tokenRequest.GetJsonAsync<AuthToken>();
+
+            _memoryCache.Set(authApplicationModel.Code, token.AccessToken);
 
             return token.AccessToken;
 
