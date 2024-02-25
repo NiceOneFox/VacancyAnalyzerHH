@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -9,12 +9,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="MediatR" Version="12.2.0" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.15.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\VacancyAnalyzerHH.Application\VacancyAnalyzerHH.Application.csproj" />
     <ProjectReference Include="..\VacancyAnalyzerHH.Contracts\VacancyAnalyzerHH.Contracts.csproj" />
+    <ProjectReference Include="..\VacancyAnalyzerHH.Infrastructure\VacancyAnalyzerHH.Infrastructure.csproj" />
+    <ProjectReference Include="..\VacancyAnalyzerHH.MongoDb\VacancyAnalyzerHH.MongoDb.csproj" />
   </ItemGroup>
 
 </Project>
